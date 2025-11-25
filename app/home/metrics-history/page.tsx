@@ -327,8 +327,6 @@ export default function MetricsHistoryPage() {
                                     y={tooltipY}
                                     width="120"
                                     height="35"
-                                    fill="currentColor"
-                                    className="fill-card"
                                     stroke="currentColor"
                                     strokeWidth="1"
                                     className="stroke-border fill-card"
