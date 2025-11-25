@@ -16,6 +16,8 @@ import { DashboardPage } from "./components/dashboard/DashboardPage";
 import { GoalsPage } from "./components/goals/GoalsPage";
 import { MetricsPage } from "./components/metrics/MetricsPage";
 import { OperationsPage } from "./components/operations/OperationsPage";
+import { HabitsHistoryView } from "./components/history/HabitsHistoryView";
+import { MetricsHistoryView } from "./components/history/MetricsHistoryView";
 
 // Custom Hooks
 import { useHomeData } from "./hooks/useHomeData";
@@ -78,6 +80,10 @@ export default function HomePage() {
   const [currentPageX, setCurrentPageX] = useState(1); // Start on Dashboard (X: 1)
   const [currentPageY, setCurrentPageY] = useState(0); // Start on top row (Y: 0)
   const [showAddHabitColumn, setShowAddHabitColumn] = useState(false);
+
+  // State for history views
+  const [showHabitsHistory, setShowHabitsHistory] = useState(false);
+  const [showMetricsHistory, setShowMetricsHistory] = useState(false);
 
   // 2D page grid structure: pageGrid[y][x]
   // Row 0: Goals, Dashboard, Metrics
@@ -174,7 +180,7 @@ export default function HomePage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="h-10 w-10 rounded-full hover:bg-accent transition-colors"
+                className="h-10 w-10 rounded-full hover:bg-accent transition-colors cursor-pointer"
               >
                 {theme === 'dark' ? (
                   <Sun className="h-5 w-5 text-foreground" />
@@ -187,7 +193,7 @@ export default function HomePage() {
               {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
                     <Avatar className="h-10 w-10 border border-border">
                       <AvatarImage src={homeData.profile?.avatar_url || homeData.user?.user_metadata?.avatar_url} alt={homeData.profile?.username || 'User'} />
                       <AvatarFallback className="bg-gray-200 dark:bg-[#2d2d2d]">
@@ -261,6 +267,7 @@ export default function HomePage() {
                 setShowAddHabitColumn={setShowAddHabitColumn}
                 habitsHook={habitsHook}
                 updateEntry={homeData.updateEntry}
+                onShowHabitsHistory={() => setShowHabitsHistory(true)}
               />
             </div>
           </div>
@@ -275,6 +282,7 @@ export default function HomePage() {
                 setEntries={homeData.setEntries}
                 categories={homeData.categories}
                 loadEntries={homeData.loadEntries}
+                onShowMetricsHistory={() => setShowMetricsHistory(true)}
               />
             </div>
           </div>
@@ -310,7 +318,7 @@ export default function HomePage() {
                 key={page.id}
                 onClick={() => goToPage(colIndex, 0)}
                 className={`
-                  p-2.5 transition-all duration-200
+                  p-2.5 transition-all duration-200 cursor-pointer
                   ${isActive
                     ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
                     : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}
@@ -332,7 +340,7 @@ export default function HomePage() {
                 key={page.id}
                 onClick={() => goToPage(1, 1)}
                 className={`
-                  p-2.5 transition-all duration-200
+                  p-2.5 transition-all duration-200 cursor-pointer
                   ${isActive
                     ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
                     : 'bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}
@@ -344,6 +352,22 @@ export default function HomePage() {
           );
         })()}
       </div>
+
+      {/* History View Overlays */}
+      {showHabitsHistory && (
+        <HabitsHistoryView
+          habits={homeData.habits}
+          entries={homeData.entries}
+          onClose={() => setShowHabitsHistory(false)}
+        />
+      )}
+      {showMetricsHistory && (
+        <MetricsHistoryView
+          metrics={homeData.trackedMetrics}
+          entries={homeData.entries}
+          onClose={() => setShowMetricsHistory(false)}
+        />
+      )}
     </div>
   );
 }

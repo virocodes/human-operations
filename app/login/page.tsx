@@ -47,7 +47,7 @@ export default function LoginPage() {
             <Button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-wide uppercase rounded-sm h-11"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-wide uppercase rounded-sm h-11 cursor-pointer"
             >
               {loading ? "Connecting..." : "Sign in with Google"}
             </Button>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Metric, DailyEntry } from "../types";
 import { formatDate } from "../utils/formatters";
+import LoadingScreen from "@/components/LoadingScreen";
 
 type TimeRange = '7d' | '30d' | '90d' | '1y' | 'all';
 
@@ -87,11 +88,7 @@ export default function MetricsHistoryPage() {
   };
 
   if (loading) {
-    return (
-      <div className="fixed inset-0 overflow-y-auto custom-scrollbar bg-background flex items-center justify-center">
-        <p className="text-sm font-mono text-muted-foreground">Loading...</p>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

@@ -1,6 +1,4 @@
 "use client";
-
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -48,9 +46,10 @@ interface MetricsPageProps {
   setEntries: (entries: DailyEntry[] | ((prev: DailyEntry[]) => DailyEntry[])) => void;
   categories: Array<{ id: string; name: string; display_order: number }>;
   loadEntries: () => Promise<void>;
+  onShowMetricsHistory: () => void;
 }
 
-export function MetricsPage({ days, metricsHook, entries, setEntries, categories, loadEntries }: MetricsPageProps) {
+export function MetricsPage({ days, metricsHook, entries, setEntries, categories, loadEntries, onShowMetricsHistory }: MetricsPageProps) {
   const {
     metricName,
     setMetricName,
@@ -82,8 +81,6 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
     deleteMetric,
     openEditMetricDialog,
   } = metricsHook;
-
-  const router = useRouter();
 
   // Helper functions
   const getEntry = (metricId: string, date: Date) => {
@@ -199,9 +196,9 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
           </div>
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => router.push('/home/metrics-history')}
+              onClick={onShowMetricsHistory}
               variant="outline"
-              className="font-mono text-xs tracking-widest uppercase rounded-sm"
+              className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer"
             >
               View History
             </Button>
@@ -229,14 +226,14 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
             <Button
               variant={selectedCategory === 'all' ? "default" : "outline"}
               onClick={() => setSelectedCategory('all')}
-              className="font-mono text-xs tracking-wide uppercase rounded-sm"
+              className="font-mono text-xs tracking-wide uppercase rounded-sm cursor-pointer"
             >
               All Metrics
             </Button>
             <Button
               variant={!selectedCategory ? "default" : "outline"}
               onClick={() => setSelectedCategory(null)}
-              className="font-mono text-xs tracking-wide uppercase rounded-sm"
+              className="font-mono text-xs tracking-wide uppercase rounded-sm cursor-pointer"
             >
               Uncategorized
             </Button>
@@ -245,7 +242,7 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
                 key={cat.id}
                 variant={selectedCategory === cat.id ? "default" : "outline"}
                 onClick={() => setSelectedCategory(cat.id)}
-                className="font-mono text-xs tracking-wide uppercase rounded-sm"
+                className="font-mono text-xs tracking-wide uppercase rounded-sm cursor-pointer"
               >
                 {cat.name}
               </Button>

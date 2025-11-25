@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Metric, DailyEntry } from "../types";
 import { formatDate } from "../utils/formatters";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function HabitsHistoryPage() {
   const router = useRouter();
@@ -90,11 +91,7 @@ export default function HabitsHistoryPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm font-mono text-muted-foreground">Loading...</p>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
