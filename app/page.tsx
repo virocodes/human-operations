@@ -28,7 +28,7 @@ export default function Home() {
           <Link href="/home">
             <Button
               size="lg"
-              className="group mt-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-6 h-11 rounded-sm font-mono text-sm tracking-wide uppercase"
+              className="group mt-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-6 h-11 rounded-sm font-mono text-sm tracking-wide uppercase cursor-pointer"
             >
               Begin Operations
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

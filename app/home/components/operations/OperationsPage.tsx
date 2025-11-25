@@ -1263,7 +1263,7 @@ export function OperationsPage({
                               openEditOperationDialog(viewingOperation);
                               setViewingOperation(null);
                             }}
-                            className="w-full font-mono text-xs"
+                            className="w-full font-mono text-xs cursor-pointer"
                           >
                             Edit Links
                           </Button>
@@ -1276,7 +1276,7 @@ export function OperationsPage({
                                 setViewingOperation(null);
                               }
                             }}
-                            className="w-full font-mono text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="w-full font-mono text-xs text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                           >
                             <Trash2 className="h-3 w-3 mr-1.5" />
                             Delete Operation

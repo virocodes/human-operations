@@ -1,7 +1,4 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -66,6 +63,7 @@ interface DashboardPageProps {
   setShowAddHabitColumn: (show: boolean) => void;
   habitsHook: HabitsHook;
   updateEntry: (metricId: string, date: Date, value: boolean | number, type: MetricType) => Promise<void>;
+  onShowHabitsHistory: () => void;
 }
 
 export function DashboardPage({
@@ -80,8 +78,8 @@ export function DashboardPage({
   setShowAddHabitColumn,
   habitsHook,
   updateEntry,
+  onShowHabitsHistory,
 }: DashboardPageProps) {
-  const router = useRouter();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -246,9 +244,9 @@ export function DashboardPage({
             </div>
             <div className="flex items-center gap-2">
               <Button
-                onClick={() => router.push('/home/habits-history')}
+                onClick={onShowHabitsHistory}
                 variant="outline"
-                className="font-mono text-xs tracking-widest uppercase rounded-sm"
+                className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer"
               >
                 View History
               </Button>
@@ -357,7 +355,7 @@ export function DashboardPage({
                             <button
                               onClick={() => isEditable && updateEntry(habit.id, day, !(entry?.value_boolean === true), 'boolean')}
                               disabled={!isEditable}
-                              className="w-full h-full py-4 min-h-[48px] transition-transform duration-150 hover:scale-[1.02]"
+                              className={`w-full h-full py-4 min-h-[48px] transition-transform duration-150 hover:scale-[1.02] ${isEditable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                             />
                           </div>
                         );
