@@ -1,63 +1,73 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-amber-50/30 dark:bg-slate-950">
+      <main className="max-w-6xl mx-auto px-6 py-20">
+        {/* Hero Section */}
+        <div className="space-y-8 mb-32">
+          <div className="inline-block">
+            <div className="px-3 py-1 bg-amber-100/50 dark:bg-slate-900 border border-amber-800/20 dark:border-slate-700 rounded-sm text-xs font-mono tracking-wider text-amber-900 dark:text-slate-400 uppercase">
+              Est. 2025
+            </div>
+          </div>
+
+          <div className="space-y-6 max-w-3xl">
+            <h1 className="text-6xl md:text-7xl font-serif font-light tracking-tight text-gray-900 dark:text-white leading-[1.1]">
+              Human
+              <br />
+              <span className="font-medium italic">Operations</span>
+            </h1>
+            <p className="text-lg text-gray-700 dark:text-slate-300 max-w-2xl leading-relaxed font-light border-l-2 border-amber-800/30 dark:border-slate-700 pl-4">
+              A systematic approach to daily operations. Track, measure, and optimize your personal metrics with precision and clarity.
+            </p>
+          </div>
+
+          <Link href="/home">
+            <Button
+              size="lg"
+              className="group mt-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-6 h-11 rounded-sm font-mono text-sm tracking-wide uppercase"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Begin Operations
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
+          <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
+            <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">I.</div>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Systematic Tracking</h3>
+            <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
+              Document boolean and numeric metrics with customizable units for comprehensive data collection.
+            </p>
+          </div>
+
+          <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
+            <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">II.</div>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Visual Intelligence</h3>
+            <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
+              Immediate visual feedback through color-coded cells provides at-a-glance operational status.
+            </p>
+          </div>
+
+          <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
+            <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">III.</div>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Operational Excellence</h3>
+            <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
+              Build consistency and maintain standards through daily documentation and review.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer tagline */}
+        <div className="mt-20 text-center">
+          <p className="text-xs font-mono tracking-widest text-gray-500 dark:text-slate-600 uppercase">
+            Optimizing Human Performance Since 2025
+          </p>
         </div>
       </main>
     </div>
