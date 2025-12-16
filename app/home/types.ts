@@ -84,6 +84,9 @@ export interface Profile {
   avatar_url?: string;
   wake_hour?: number;
   sleep_hour?: number;
+  stripe_customer_id?: string;
+  has_paid?: boolean;
+  payment_date?: string;
 }
 
 export interface Operation {

@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is logged in, check onboarding status
+  // If user is logged in, check onboarding and payment status
   if (user) {
     const { data: onboardingState } = await supabase
       .from('onboarding_state')
@@ -46,35 +46,76 @@ export async function middleware(request: NextRequest) {
       .eq('user_id', user.id)
       .single()
 
+    const { data: userData } = await supabase
+      .from('users')
+      .select('has_paid')
+      .eq('id', user.id)
+      .single()
+
     const hasCompletedOnboarding = onboardingState?.current_phase === 'complete'
+    const hasPaid = userData?.has_paid === true
 
     // If trying to access root path but already logged in
     if (request.nextUrl.pathname === '/') {
       const url = request.nextUrl.clone()
-      // Send to onboarding if not complete, otherwise to home
-      url.pathname = hasCompletedOnboarding ? '/home' : '/onboarding'
+      // Route based on onboarding and payment status
+      if (!hasCompletedOnboarding) {
+        url.pathname = '/onboarding'
+      } else if (!hasPaid) {
+        url.pathname = '/payment'
+      } else {
+        url.pathname = '/home'
+      }
       return NextResponse.redirect(url)
     }
 
-    // If trying to access /home but haven't completed onboarding
-    if (!hasCompletedOnboarding && request.nextUrl.pathname.startsWith('/home')) {
+    // If trying to access /home but haven't completed onboarding or payment
+    if (request.nextUrl.pathname.startsWith('/home')) {
+      if (!hasCompletedOnboarding) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/onboarding'
+        return NextResponse.redirect(url)
+      }
+      if (!hasPaid) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/payment'
+        return NextResponse.redirect(url)
+      }
+    }
+
+    // If trying to access /payment but haven't completed onboarding
+    if (request.nextUrl.pathname.startsWith('/payment') && !hasCompletedOnboarding) {
       const url = request.nextUrl.clone()
       url.pathname = '/onboarding'
+      return NextResponse.redirect(url)
+    }
+
+    // If trying to access /payment but already paid
+    if (request.nextUrl.pathname.startsWith('/payment') && hasPaid) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/home'
       return NextResponse.redirect(url)
     }
 
     // If trying to access /login but already logged in
     if (request.nextUrl.pathname === '/login') {
       const url = request.nextUrl.clone()
-      // Send to onboarding if not complete, otherwise to home
-      url.pathname = hasCompletedOnboarding ? '/home' : '/onboarding'
+      // Route based on onboarding and payment status
+      if (!hasCompletedOnboarding) {
+        url.pathname = '/onboarding'
+      } else if (!hasPaid) {
+        url.pathname = '/payment'
+      } else {
+        url.pathname = '/home'
+      }
       return NextResponse.redirect(url)
     }
 
     // If trying to access /onboarding but already completed
     if (hasCompletedOnboarding && request.nextUrl.pathname.startsWith('/onboarding')) {
       const url = request.nextUrl.clone()
-      url.pathname = '/home'
+      // Send to payment if not paid, otherwise home
+      url.pathname = hasPaid ? '/home' : '/payment'
       return NextResponse.redirect(url)
     }
   }
