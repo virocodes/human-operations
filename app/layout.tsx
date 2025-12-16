@@ -15,7 +15,28 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Human Operations",
-  description: "Human Operations",
+  description: "A personal productivity and habit tracking system - your life operating system",
+  icons: {
+    icon: [
+      { url: '/mainlogo.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "HumOps",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
