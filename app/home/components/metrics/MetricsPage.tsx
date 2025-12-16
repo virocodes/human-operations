@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, FolderPlus } from "lucide-react";
 import { NumericInputCell } from '../shared/NumericInputCell';
+import { MetricCard } from './MetricCard';
 import { Metric, DailyEntry, MetricType, Operator } from '../../types';
 import { formatDate, formatDayHeader, isToday, isYesterday } from '../../utils/formatters';
 
@@ -189,16 +190,16 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
     <>
       {/* Tracked Metrics Section */}
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-lg font-serif font-medium text-foreground">Tracked Metrics</h3>
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide">Numeric Values by Category</p>
+        <div className="flex flex-row items-center justify-between mb-4 gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base md:text-lg font-serif font-medium text-foreground truncate">Tracked Metrics</h3>
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide hidden md:block">Numeric Values by Category</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Button
               onClick={onShowMetricsHistory}
               variant="outline"
-              className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer"
+              className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer hidden md:flex"
             >
               View History
             </Button>
@@ -207,22 +208,22 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
               variant="outline"
               className="border-border font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02]"
             >
-              <FolderPlus className="h-4 w-4 mr-2" />
-              New Category
+              <FolderPlus className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">New Category</span>
             </Button>
             <Button
               onClick={() => setIsAddMetricDialogOpen(true)}
-              className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
+              className="bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              New Metric
+              <Plus className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">New Metric</span>
             </Button>
           </div>
         </div>
 
         {/* Category Selector */}
         {(categories.length > 0 || filteredTrackedMetrics.length > 0) && (
-          <div className="mb-4 flex gap-2 flex-wrap">
+          <div className="mb-4 flex gap-2 overflow-x-auto pb-2 md:flex-wrap custom-scrollbar">
             <Button
               variant={selectedCategory === 'all' ? "default" : "outline"}
               onClick={() => setSelectedCategory('all')}
@@ -258,50 +259,17 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
             <p className="text-sm text-muted-foreground font-light">No metrics in this category</p>
           </div>
         ) : (
-          <div className="space-y-4 overflow-y-auto pr-2 pb-20 flex-1 custom-scrollbar">
+          <div className="space-y-3 md:space-y-4 overflow-y-auto pr-2 pb-20 flex-1 custom-scrollbar">
             {filteredTrackedMetrics.map(metric => (
-              <div key={metric.id} className="bg-card border border-border shadow-sm p-6 relative overflow-hidden">
-                {/* Corner brackets */}
-                <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h4 className="text-base font-mono uppercase tracking-wider text-foreground cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" onClick={() => openEditMetricDialog(metric)}>
-                      {metric.name}
-                    </h4>
-                    {metric.unit && <p className="text-xs font-mono text-muted-foreground">Unit: {metric.unit}</p>}
-                    {metric.optimal_value && metric.minimum_value && (
-                      <p className="text-xs font-mono text-muted-foreground">
-                        Target: {metric.operator === 'at_least' ? '≥' : metric.operator === 'at_most' ? '≤' : '='} {metric.optimal_value} • Min: {metric.minimum_value}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-7 gap-2">
-                  {days.map((day) => {
-                    const entry = getEntry(metric.id, day);
-                    const isEditable = canEdit(day);
-                    const cellColor = getCellColor(entry, metric);
-
-                    return (
-                      <div key={formatDate(day)} className="flex flex-col">
-                        <div className="text-xs font-mono text-muted-foreground text-center mb-1">{formatDayHeader(day)}</div>
-                        <div className={`${cellColor} transition-all duration-150 ${isEditable ? 'cursor-pointer hover:brightness-95' : 'opacity-50'} border border-border p-2 flex items-center justify-center min-h-[60px]`}>
-                          <NumericInputCell
-                            initialValue={entry?.value_numeric ?? null}
-                            onUpdate={(value) => updateEntry(metric.id, day, value, 'numeric')}
-                            disabled={!isEditable}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <MetricCard
+                key={metric.id}
+                metric={metric}
+                days={days}
+                entries={entries}
+                updateEntry={updateEntry}
+                getCellColor={getCellColor}
+                onEdit={() => openEditMetricDialog(metric)}
+              />
             ))}
           </div>
         )}
@@ -309,7 +277,7 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
 
       {/* Add Metric Dialog */}
       <Dialog open={isAddMetricDialogOpen} onOpenChange={setIsAddMetricDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[500px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Tracked Metric</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -408,7 +376,7 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
 
       {/* Edit Metric Dialog */}
       <Dialog open={isEditMetricDialogOpen} onOpenChange={setIsEditMetricDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[500px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Edit Metric</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -511,7 +479,7 @@ export function MetricsPage({ days, metricsHook, entries, setEntries, categories
 
       {/* Add Category Dialog */}
       <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Category</DialogTitle>
             <DialogDescription className="text-sm font-light">

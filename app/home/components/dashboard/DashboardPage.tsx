@@ -20,6 +20,7 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableHabitHeader } from '../shared/SortableHabitHeader';
+import { HabitCard } from './HabitCard';
 import { Metric, DailyEntry, MetricType } from '../../types';
 import { formatDate, formatDayHeader, isToday, canEdit } from '../../utils/formatters';
 
@@ -138,10 +139,10 @@ export function DashboardPage({
         {/* Welcome Section */}
         <div className="mb-8 bg-card border border-border shadow-sm relative overflow-hidden">
           {/* Corner accents */}
-          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+          <div className="absolute top-0 left-0 w-2 h-2 md:w-4 md:h-4 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+          <div className="absolute top-0 right-0 w-2 h-2 md:w-4 md:h-4 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+          <div className="absolute bottom-0 left-0 w-2 h-2 md:w-4 md:h-4 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+          <div className="absolute bottom-0 right-0 w-2 h-2 md:w-4 md:h-4 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
 
           {/* Grid pattern */}
           <div className="absolute inset-0 opacity-[0.015]" style={{
@@ -149,29 +150,29 @@ export function DashboardPage({
             backgroundSize: '20px 20px'
           }}></div>
 
-          <div className="relative p-8">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h2 className="text-3xl font-serif font-medium text-foreground mb-2 tracking-tight">
+          <div className="relative p-6 md:p-8">
+            <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-6 md:gap-0">
+              <div className="flex-1 w-full md:w-auto text-center md:text-left">
+                <h2 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-2 tracking-tight">
                   Welcome, <span className="italic">{profile?.username || user?.email?.split('@')[0] || 'User'}</span>
                 </h2>
-                <div className="text-sm text-muted-foreground font-light mb-6 tracking-wide">
+                <div className="text-xs md:text-sm text-muted-foreground font-light mb-6 md:mb-6 tracking-wide">
                   {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                 </div>
 
                 {todayStats.total > 0 && (
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-baseline gap-2">
-                      <div className="text-6xl font-serif font-medium text-foreground tabular-nums">
+                  <div className="flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6">
+                    <div className="flex items-baseline gap-1 md:gap-2">
+                      <div className="text-5xl md:text-6xl font-serif font-medium text-foreground tabular-nums">
                         {todayStats.completed}
                       </div>
-                      <div className="text-3xl font-serif text-gray-400 dark:text-[#909090]">/</div>
-                      <div className="text-4xl font-serif text-muted-foreground tabular-nums">
+                      <div className="text-3xl md:text-3xl font-serif text-gray-400 dark:text-[#909090]">/</div>
+                      <div className="text-4xl md:text-4xl font-serif text-muted-foreground tabular-nums">
                         {todayStats.total}
                       </div>
                     </div>
-                    <div className="flex flex-col justify-center">
-                      <div className="text-sm font-mono text-foreground uppercase tracking-widest">
+                    <div className="flex flex-col justify-center text-center md:text-left">
+                      <div className="text-xs md:text-sm font-mono text-foreground uppercase tracking-widest">
                         Habits Complete
                       </div>
                       <div className="text-xs font-mono text-muted-foreground tracking-wider">
@@ -182,9 +183,9 @@ export function DashboardPage({
                 )}
               </div>
 
-              {/* Progress Ring */}
-              <div className="flex flex-col items-center ml-8">
-                <div className="relative w-40 h-40 flex items-center justify-center">
+              {/* Progress Ring - Hidden on mobile */}
+              <div className="hidden md:flex flex-col items-center w-full md:w-auto md:ml-8 mt-4 md:mt-0">
+                <div className="relative w-40 h-40 md:w-40 md:h-40 flex items-center justify-center">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
                     {[...Array(12)].map((_, i) => (
                       <line
@@ -222,7 +223,7 @@ export function DashboardPage({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-4xl font-serif font-medium text-foreground mb-1 tabular-nums">
+                    <div className="text-5xl md:text-4xl font-serif font-medium text-foreground mb-1 tabular-nums">
                       {todayStats.total > 0 ? Math.round((todayStats.completed / todayStats.total) * 100) : 0}%
                     </div>
                     <div className="text-xs font-mono text-muted-foreground uppercase tracking-[0.2em]">
@@ -239,23 +240,23 @@ export function DashboardPage({
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-serif font-medium text-foreground">Daily Habits</h3>
-              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide">Checkbox Tracking</p>
+              <h3 className="text-base md:text-lg font-serif font-medium text-foreground">Daily Habits</h3>
+              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide hidden md:block">Checkbox Tracking</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
                 onClick={onShowHabitsHistory}
                 variant="outline"
-                className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer"
+                className="font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer hidden md:flex"
               >
                 View History
               </Button>
               <Button
                 onClick={() => habitsHook.setIsAddHabitDialogOpen(true)}
-                className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
+                className="bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                New Habit
+                <Plus className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">New Habit</span>
               </Button>
             </div>
           </div>
@@ -268,7 +269,10 @@ export function DashboardPage({
               <p className="text-sm text-muted-foreground font-light">No habits defined yet</p>
             </div>
           ) : (
-            <DndContext
+            <>
+              {/* Desktop: Grid Table */}
+              <div className="hidden md:block">
+                <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={habitsHook.handleHabitDragEnd}
@@ -369,13 +373,30 @@ export function DashboardPage({
                   );
                 })}
               </div>
-            </DndContext>
+                </DndContext>
+              </div>
+
+              {/* Mobile: Card List */}
+              <div className="block md:hidden space-y-3">
+                {habits.map((habit) => (
+                  <HabitCard
+                    key={habit.id}
+                    habit={habit}
+                    days={days}
+                    entries={entries}
+                    updateEntry={updateEntry}
+                    getCellColor={getCellColor}
+                    onEdit={() => habitsHook.openEditHabitDialog(habit)}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
       {/* Add Habit Dialog */}
       <Dialog open={habitsHook.isAddHabitDialogOpen} onOpenChange={habitsHook.setIsAddHabitDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Habit</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -404,7 +425,7 @@ export function DashboardPage({
 
       {/* Edit Habit Dialog */}
       <Dialog open={habitsHook.isEditHabitDialogOpen} onOpenChange={habitsHook.setIsEditHabitDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Edit Habit</DialogTitle>
             <DialogDescription className="text-sm font-light">

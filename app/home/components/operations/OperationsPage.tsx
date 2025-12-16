@@ -310,13 +310,13 @@ export function OperationsPage({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-8">
+      <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-8">
         {/* Left: Goals Section */}
         <div>
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-lg font-serif font-medium text-foreground">Goals</h3>
-              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide mt-1">Track Your Objectives</p>
+              <h3 className="text-base md:text-lg font-serif font-medium text-foreground">Goals</h3>
+              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide mt-1 hidden md:block">Track Your Objectives</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -331,8 +331,8 @@ export function OperationsPage({
                 onClick={() => setIsAddGoalDialogOpen(true)}
                 className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                New
+                <Plus className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">New</span>
               </Button>
             </div>
           </div>
@@ -342,29 +342,29 @@ export function OperationsPage({
 
             if (visibleGoals.length === 0) {
               return (
-                <div className="bg-card border border-border shadow-sm p-6 relative overflow-hidden mt-6">
-                  <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                  <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                <div className="bg-card border border-border shadow-sm p-4 md:p-6 relative overflow-hidden mt-6">
+                  <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                  <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                  <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
                   <p className="text-sm text-muted-foreground font-light text-center py-12">No goals yet. Create your first goal to get started.</p>
                 </div>
               );
             }
 
             return (
-              <div className="space-y-4 mt-6 max-h-[600px] overflow-y-auto pr-2">
+              <div className="space-y-4 mt-6 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
                 {visibleGoals.map(goal => {
                   const progress = calculateGoalProgress(goal);
                   const metric = goal.metric_id ? trackedMetrics.find(m => m.id === goal.metric_id) : null;
                   const currentValue = getCurrentGoalValue(goal);
 
                   return (
-                    <div key={goal.id} className="bg-card border border-border shadow-sm p-6 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-150" onClick={() => openEditGoalDialog(goal)}>
-                      <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                      <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                      <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                      <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                    <div key={goal.id} className="bg-card border border-border shadow-sm p-4 md:p-6 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-150" onClick={() => openEditGoalDialog(goal)}>
+                      <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                      <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                      <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
 
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
@@ -432,19 +432,19 @@ export function OperationsPage({
         <div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-serif font-medium text-foreground">Operations</h3>
-              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide">System Management</p>
+              <h3 className="text-base md:text-lg font-serif font-medium text-foreground">Operations</h3>
+              <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide hidden md:block">System Management</p>
             </div>
             <Button
               onClick={() => setIsAddOperationDialogOpen(true)}
               className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              New
+              <Plus className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">New</span>
             </Button>
           </div>
 
-          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+          <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
             {activeOperations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <Archive className="h-12 w-12 text-muted-foreground/40 mb-4" />
@@ -461,7 +461,7 @@ export function OperationsPage({
                 return (
                   <div
                     key={operation.id}
-                    className="bg-card border border-border shadow-sm p-6 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-150"
+                    className="bg-card border border-border shadow-sm p-4 md:p-6 relative overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-150"
                     onClick={() => {
                       setViewingOperation(operation);
                       setOperationTitle(operation.title);
@@ -472,10 +472,10 @@ export function OperationsPage({
                     }}
                   >
                     {/* Corner brackets */}
-                    <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                    <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                    <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                    <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                    <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
 
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
@@ -521,7 +521,7 @@ export function OperationsPage({
                                 {habitEntries.map((completed, idx) => (
                                   <div
                                     key={idx}
-                                    className={`w-5 h-5 border border-border transition-colors ${
+                                    className={`w-4 h-4 md:w-5 md:h-5 border border-border transition-colors ${
                                       completed
                                         ? 'bg-gray-900 dark:bg-white'
                                         : 'bg-transparent'
@@ -600,14 +600,14 @@ export function OperationsPage({
 
       {/* Add Goal Dialog */}
       <Dialog open={isAddGoalDialogOpen} onOpenChange={setIsAddGoalDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[550px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
-            <DialogTitle className="font-serif text-xl">New Goal</DialogTitle>
+            <DialogTitle className="font-serif text-lg md:text-xl">New Goal</DialogTitle>
             <DialogDescription className="text-sm font-light">
               Create a new goal to track your progress.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 md:space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="goal-title" className="text-xs font-mono tracking-wider uppercase text-foreground">Title</Label>
               <Input
@@ -745,14 +745,14 @@ export function OperationsPage({
 
       {/* Edit Goal Dialog */}
       <Dialog open={isEditGoalDialogOpen} onOpenChange={setIsEditGoalDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[550px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
-            <DialogTitle className="font-serif text-xl">Edit Goal</DialogTitle>
+            <DialogTitle className="font-serif text-lg md:text-xl">Edit Goal</DialogTitle>
             <DialogDescription className="text-sm font-light">
               Update goal details.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 md:space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="edit-goal-title" className="text-xs font-mono tracking-wider uppercase text-foreground">Title</Label>
               <Input
@@ -834,7 +834,7 @@ export function OperationsPage({
                     Add
                   </Button>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                   {goalSubgoals.map((subgoal, index) => (
                     <div key={index} className="flex gap-2">
                       <Input
@@ -886,9 +886,9 @@ export function OperationsPage({
 
       {/* Archived Goals Dialog */}
       <Dialog open={isArchivedGoalsDialogOpen} onOpenChange={setIsArchivedGoalsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] rounded-sm bg-card border-border max-h-[80vh] overflow-y-auto">
+        <DialogContent className="md:max-w-[600px] rounded-none md:rounded-sm bg-card md:border-border max-h-[80vh] overflow-y-auto custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="font-serif text-xl">Archived Goals</DialogTitle>
+            <DialogTitle className="font-serif text-lg md:text-xl">Archived Goals</DialogTitle>
             <DialogDescription className="text-sm font-light">
               View and manage your archived goals.
             </DialogDescription>
@@ -974,16 +974,16 @@ export function OperationsPage({
           }
         }}
       >
-        <DialogContent className="sm:max-w-[540px] rounded-none bg-card border-2 border-border max-h-[90vh] overflow-y-auto">
+        <DialogContent className="md:max-w-[540px] rounded-none md:rounded-sm bg-card md:border-2 md:border-border max-h-[90vh] overflow-y-auto custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="font-serif text-xl">
+            <DialogTitle className="font-serif text-lg md:text-xl">
               {editingOperation ? 'Edit Operation' : 'New Operation'}
             </DialogTitle>
             <DialogDescription className="text-sm font-light">
               {editingOperation ? 'Update operation details' : 'Create a new operation to manage'}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 md:space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="operation-title" className="text-xs font-mono tracking-wider uppercase text-foreground">
                 Title
@@ -1120,17 +1120,17 @@ export function OperationsPage({
             setIsEditingHabits(false);
           }
         }}>
-          <DialogContent className="sm:max-w-[800px] h-[85vh] rounded-none bg-card border border-border shadow-sm p-0 overflow-hidden">
+          <DialogContent className="md:max-w-[800px] h-[85vh] rounded-none md:rounded-sm bg-card md:border md:border-border shadow-sm p-0 overflow-hidden">
             <DialogHeader className="sr-only">
               <DialogTitle>Operation</DialogTitle>
             </DialogHeader>
 
             <div className="relative h-full flex flex-col">
               {/* Corner brackets */}
-              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+              <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
 
               {/* Header - Title & Description */}
               <div className="px-6 py-4 border-b border-border flex-shrink-0">
@@ -1172,9 +1172,9 @@ export function OperationsPage({
               </div>
 
               {/* Main Content - 2 Column Layout */}
-              <div className="flex-1 flex overflow-hidden">
+              <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
                 {/* Left Sidebar - Metadata */}
-                <div className="w-64 border-r border-border p-4 space-y-4 overflow-y-auto flex-shrink-0">
+                <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border p-4 space-y-4 overflow-y-auto custom-scrollbar flex-shrink-0">
                   {/* Metric */}
                   {(() => {
                     const metric = trackedMetrics.find(m => m.id === operationMetricId);
@@ -1213,7 +1213,7 @@ export function OperationsPage({
                                       {habitEntries.map((completed, idx) => (
                                         <div
                                           key={idx}
-                                          className={`w-5 h-5 border border-border ${completed ? 'bg-gray-900 dark:bg-white' : 'bg-transparent'}`}
+                                          className={`w-4 h-4 md:w-5 md:h-5 border border-border ${completed ? 'bg-gray-900 dark:bg-white' : 'bg-transparent'}`}
                                         />
                                       ))}
                                       <span className="text-xs font-mono text-muted-foreground ml-1.5">{completedCount}/7</span>

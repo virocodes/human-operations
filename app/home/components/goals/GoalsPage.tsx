@@ -244,7 +244,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
     const startHourRange = wakeHour;
     const endHourRange = sleepHour >= wakeHour ? sleepHour : sleepHour + 24;
     const numHours = endHourRange - startHourRange;
-    const hourHeight = 600 / numHours;
+    const containerHeight = typeof window !== 'undefined' && window.innerWidth < 768 ? 400 : 600;
+    const hourHeight = containerHeight / numHours;
 
     // Convert Y to minutes from wake
     const minutesFromWake = (y / hourHeight) * 60;
@@ -286,7 +287,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
     const startHourRange = wakeHour;
     const endHourRange = sleepHour >= wakeHour ? sleepHour : sleepHour + 24;
     const numHours = endHourRange - startHourRange;
-    const hourHeight = 600 / numHours;
+    const containerHeight = typeof window !== 'undefined' && window.innerWidth < 768 ? 400 : 600;
+    const hourHeight = containerHeight / numHours;
 
     const minY = Math.min(dragStartY, dragCurrentY);
     const maxY = Math.max(dragStartY, dragCurrentY);
@@ -322,24 +324,24 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
   return (
     <>
-          <div className="grid grid-cols-2 gap-8 h-full">
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-8 h-full">
             {/* Left: To Do List Section */}
             <div>
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                  <h3 className="text-lg font-serif font-medium text-foreground">To Do List</h3>
-                  <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide">Tasks & Priorities</p>
+                  <h3 className="text-base md:text-lg font-serif font-medium text-foreground">To Do List</h3>
+                  <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide hidden md:block">Tasks & Priorities</p>
                 </div>
                 <Button
                   onClick={() => setIsAddTodoDialogOpen(true)}
-                  className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
+                  className="bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  New
+                  <Plus className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">New</span>
                 </Button>
               </div>
 
-              <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+              <div className="space-y-2 max-h-[400px] md:max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
                 {todos.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 text-center">
                     <CheckSquare className="h-12 w-12 text-muted-foreground/40 mb-4" />
@@ -356,10 +358,10 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                             className="group bg-card border border-border hover:border-foreground/20 transition-all duration-200 hover:shadow-sm relative overflow-hidden"
                           >
                             {/* Corner brackets */}
-                            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                            <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
-                            <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                            <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                            <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                            <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5]"></div>
+                            <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5]"></div>
                             <div className="flex items-center gap-3 p-4">
                               <button
                                 onClick={() => handleToggleTodo(todo.id, todo.is_completed)}
@@ -466,8 +468,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-serif font-medium text-foreground">Today's Schedule</h3>
-                    <div className="flex items-center gap-3 mt-1">
+                    <h3 className="text-base md:text-lg font-serif font-medium text-foreground">Today's Schedule</h3>
+                    <div className="flex flex-row items-center gap-2 md:gap-3 mt-1">
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-mono text-muted-foreground uppercase tracking-wide">Wake:</span>
                         <select
@@ -496,19 +498,19 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                   </div>
                   <Button
                     onClick={() => setIsAddTaskDialogOpen(true)}
-                    className="bg-gray-900 hover:bg-gray-800 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
+                    className="hidden md:flex bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-mono text-xs tracking-widest uppercase rounded-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:shadow-md"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     New Task
                   </Button>
                 </div>
 
-                <div className="bg-card border border-border shadow-sm relative overflow-hidden">
+                <div className="bg-card border border-border shadow-sm relative overflow-hidden h-[400px] md:h-[600px]">
                   {/* Corner brackets */}
-                  <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-                  <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
-                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+                  <div className="absolute top-0 left-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+                  <div className="absolute top-0 right-0 w-2 h-2 md:w-3 md:h-3 border-t md:border-t-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+                  <div className="absolute bottom-0 left-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-l md:border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 md:w-3 md:h-3 border-b md:border-b-2 border-r md:border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
 
                   {/* Timetable */}
                   <div
@@ -531,7 +533,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                         hours.push(i % 24);
                       }
                       const numHours = hours.length;
-                      const hourHeight = 600 / numHours;
+                      const containerHeight = typeof window !== 'undefined' && window.innerWidth < 768 ? 400 : 600;
+                      const hourHeight = containerHeight / numHours;
 
                       return hours.map((hour, index) => (
                         <div key={hour} className="relative border-b border-border" style={{ height: `${hourHeight}px` }}>
@@ -548,7 +551,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                       const startHourRange = wakeHour;
                       const endHourRange = sleepHour >= wakeHour ? sleepHour : sleepHour + 24;
                       const numHours = endHourRange - startHourRange;
-                      const hourHeight = 600 / numHours;
+                      const containerHeight = typeof window !== 'undefined' && window.innerWidth < 768 ? 400 : 600;
+                      const hourHeight = containerHeight / numHours;
 
                       return tasks.map(task => {
                         const [startHour, startMin] = task.start_time.split(':').map(Number);
@@ -608,7 +612,8 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                       const startHourRange = wakeHour;
                       const endHourRange = sleepHour >= wakeHour ? sleepHour : sleepHour + 24;
                       const numHours = endHourRange - startHourRange;
-                      const hourHeight = 600 / numHours;
+                      const containerHeight = typeof window !== 'undefined' && window.innerWidth < 768 ? 400 : 600;
+                      const hourHeight = containerHeight / numHours;
 
                       const hourAdjusted = currentHour >= wakeHour ? currentHour - wakeHour : (24 - wakeHour) + currentHour;
                       const minutesFromWake = hourAdjusted * 60 + currentMin;
@@ -645,9 +650,17 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
               </div>
             </div>
 
+      {/* Mobile FAB for adding tasks */}
+      <button
+        onClick={() => setIsAddTaskDialogOpen(true)}
+        className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full shadow-lg flex items-center justify-center z-30 hover:scale-110 transition-transform"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
+
       {/* Add Todo Dialog */}
       <Dialog open={isAddTodoDialogOpen} onOpenChange={setIsAddTodoDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Todo</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -708,7 +721,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
       {/* Add Goal Dialog */}
       <Dialog open={isAddGoalDialogOpen} onOpenChange={setIsAddGoalDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[550px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Goal</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -853,7 +866,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
       {/* Edit Goal Dialog */}
       <Dialog open={isEditGoalDialogOpen} onOpenChange={setIsEditGoalDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[550px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Edit Goal</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -942,7 +955,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
                     Add
                   </Button>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                   {goalSubgoals.map((subgoal, index) => (
                     <div key={index} className="flex gap-2">
                       <Input
@@ -994,7 +1007,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
       {/* Add Task Dialog */}
       <Dialog open={isAddTaskDialogOpen} onOpenChange={setIsAddTaskDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">New Task</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -1045,7 +1058,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
       {/* Edit Task Dialog */}
       <Dialog open={isEditTaskDialogOpen} onOpenChange={setIsEditTaskDialogOpen}>
-        <DialogContent className="sm:max-w-[440px] rounded-sm bg-card border-border">
+        <DialogContent className="md:max-w-[440px] rounded-none md:rounded-sm bg-card md:border-border">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Edit Task</DialogTitle>
             <DialogDescription className="text-sm font-light">
@@ -1103,7 +1116,7 @@ export function GoalsPage({ goals, trackedMetrics, entries, tasks, currentTime, 
 
       {/* Archived Goals Dialog */}
       <Dialog open={isArchivedGoalsDialogOpen} onOpenChange={setIsArchivedGoalsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] rounded-sm bg-card border-border max-h-[80vh] overflow-y-auto">
+        <DialogContent className="md:max-w-[600px] rounded-none md:rounded-sm bg-card md:border-border max-h-[80vh] overflow-y-auto custom-scrollbar">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Archived Goals</DialogTitle>
             <DialogDescription className="text-sm font-light">

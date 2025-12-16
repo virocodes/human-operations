@@ -75,22 +75,33 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setSaving(true);
 
-    const response = await fetch('/api/profile', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: username.trim() || null,
-        bio: bio.trim() || null,
-        avatar_url: avatarUrl || null,
-      }),
-    });
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username.trim() || null,
+          bio: bio.trim() || null,
+          avatar_url: avatarUrl || null,
+        }),
+      });
 
-    if (response.ok) {
-      const updatedProfile = await response.json();
-      setProfile(updatedProfile);
+      if (response.ok) {
+        const updatedProfile = await response.json();
+        setProfile(updatedProfile);
+        // Update local state to match saved values
+        setUsername(updatedProfile.username || '');
+        setBio(updatedProfile.bio || '');
+        setAvatarUrl(updatedProfile.avatar_url || '');
+      } else {
+        const errorData = await response.json();
+        console.error('Save error:', errorData);
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
