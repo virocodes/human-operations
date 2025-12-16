@@ -1,8 +1,26 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push('/home');
+      }
+    };
+    checkAuth();
+  }, [router, supabase.auth]);
+
   return (
     <div className="min-h-screen bg-amber-50/30 dark:bg-slate-950">
       <main className="max-w-6xl mx-auto px-6 py-20">
@@ -21,7 +39,7 @@ export default function Home() {
               <span className="font-medium italic">Operations</span>
             </h1>
             <p className="text-lg text-gray-700 dark:text-slate-300 max-w-2xl leading-relaxed font-light border-l-2 border-amber-800/30 dark:border-slate-700 pl-4">
-              A systematic approach to daily operations. Track, measure, and optimize your personal metrics with precision and clarity.
+              Stop wondering if you're making progress. See exactly where you stand, every single day.
             </p>
           </div>
 
@@ -36,29 +54,29 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Features */}
+        {/* Benefits */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
           <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
             <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">I.</div>
-            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Systematic Tracking</h3>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Build Better Habits</h3>
             <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
-              Document boolean and numeric metrics with customizable units for comprehensive data collection.
+              Track your daily routines and watch your consistency improve. No more guessing—just clear data on what's working.
             </p>
           </div>
 
           <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
             <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">II.</div>
-            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Visual Intelligence</h3>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Measure What Matters</h3>
             <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
-              Immediate visual feedback through color-coded cells provides at-a-glance operational status.
+              Sleep, exercise, productivity—track anything you want to improve. See trends over time and make better decisions.
             </p>
           </div>
 
           <div className="space-y-3 bg-white/60 dark:bg-slate-900/50 border border-gray-300 dark:border-slate-800 p-6 shadow-sm">
             <div className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-500 uppercase">III.</div>
-            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Operational Excellence</h3>
+            <h3 className="text-lg font-serif font-medium text-gray-900 dark:text-white">Stay Accountable</h3>
             <p className="text-gray-700 dark:text-slate-400 leading-relaxed text-sm font-light">
-              Build consistency and maintain standards through daily documentation and review.
+              One look at your dashboard tells you if you're on track. Red or green—it's that simple.
             </p>
           </div>
         </div>
@@ -66,7 +84,7 @@ export default function Home() {
         {/* Footer tagline */}
         <div className="mt-20 text-center">
           <p className="text-xs font-mono tracking-widest text-gray-500 dark:text-slate-600 uppercase">
-            Optimizing Human Performance Since 2025
+            Your Life, Quantified
           </p>
         </div>
       </main>

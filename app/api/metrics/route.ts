@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -10,11 +10,20 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data, error } = await supabase
+  // Support filtering by type (e.g., ?type=boolean for habits only)
+  const { searchParams } = new URL(request.url);
+  const typeFilter = searchParams.get('type');
+
+  let query = supabase
     .from('metrics')
     .select('*')
-    .eq('user_id', user.id)
-    .order('display_order', { ascending: true })
+    .eq('user_id', user.id);
+
+  if (typeFilter) {
+    query = query.eq('type', typeFilter);
+  }
+
+  const { data, error } = await query.order('display_order', { ascending: true });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

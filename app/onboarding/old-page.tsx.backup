@@ -1,0 +1,211 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { GoalsInputPhase } from "./components/phases/GoalsInputPhase";
+import { AIGenerationPhase } from "./components/phases/AIGenerationPhase";
+import { ReviewPhase } from "./components/phases/ReviewPhase";
+
+// Phase types
+type Phase = 'welcome' | 'goals_input' | 'ai_generation' | 'review' | 'complete';
+
+// Extracted data structure
+interface ExtractedData {
+  operations: Array<{ id: string; name: string; description: string }>;
+  goals: Array<{ id: string; operation_id: string; title: string; goal_type: string; subgoals?: string[] }>;
+  habits: Array<{ id: string; name: string; linked_operation?: string }>;
+  metrics: Array<{ id: string; name: string; unit: string; optimal_value: number; minimum_value: number; operator: string; linked_operation?: string }>;
+  schedule?: { wakeHour: number; sleepHour: number };
+}
+
+export default function OnboardingPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [currentPhase, setCurrentPhase] = useState<Phase>('welcome');
+  const [userGoals, setUserGoals] = useState<string[]>([]);
+  const [extractedData, setExtractedData] = useState<ExtractedData>({
+    operations: [],
+    goals: [],
+    habits: [],
+    metrics: [],
+  });
+
+  // Load saved state and check if user should be here
+  useEffect(() => {
+    const loadOnboardingState = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+
+      // Load saved onboarding state
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: onboardingState } = await supabase
+          .from('onboarding_state')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (onboardingState) {
+          // If already complete, redirect to home
+          if (onboardingState.current_phase === 'complete') {
+            router.push('/home');
+            return;
+          }
+
+          // Resume from saved phase
+          if (onboardingState.current_phase && onboardingState.current_phase !== 'welcome') {
+            setCurrentPhase(onboardingState.current_phase as Phase);
+          }
+
+          // Restore extracted data
+          if (onboardingState.extracted_data) {
+            setExtractedData(onboardingState.extracted_data as ExtractedData);
+          }
+
+          // Restore user goals if they exist
+          if (onboardingState.user_goals) {
+            setUserGoals(onboardingState.user_goals);
+          }
+        }
+      }
+    };
+
+    loadOnboardingState();
+  }, [router, supabase]);
+
+  const saveOnboardingState = async (phase: Phase, data: ExtractedData, goals?: string[]) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from('onboarding_state')
+        .upsert({
+          user_id: user.id,
+          current_phase: phase,
+          extracted_data: data,
+          user_goals: goals || userGoals,
+          updated_at: new Date().toISOString()
+        });
+    }
+  };
+
+  const advancePhase = (nextPhase: Phase) => {
+    setCurrentPhase(nextPhase);
+  };
+
+  return (
+    <div className="min-h-screen bg-amber-50/30 dark:bg-slate-950">
+      {/* Grid pattern background */}
+      <div
+        className="fixed inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
+          backgroundSize: '20px 20px'
+        }}
+      />
+
+      {/* Main content */}
+      <div className="relative min-h-screen flex flex-col items-center justify-center">
+        {/* Phase content will go here */}
+        {currentPhase === 'welcome' && (
+          <div className="text-center space-y-12 px-6 animate-fadeIn max-w-3xl">
+            {/* Badge */}
+            <div className="inline-block">
+              <div className="px-3 py-1 bg-amber-100/50 dark:bg-slate-900 border border-amber-800/20 dark:border-slate-700 text-xs font-mono tracking-wider text-amber-900 dark:text-slate-400 uppercase">
+                System Initialization
+              </div>
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-serif font-light tracking-tight text-gray-900 dark:text-white leading-[1.1]">
+              Welcome.
+            </h1>
+
+            <div className="space-y-6">
+              <p className="text-lg font-serif font-light text-gray-700 dark:text-slate-300 leading-relaxed border-l-2 border-amber-800/30 dark:border-slate-700 pl-4 text-left">
+                You're about to build something that will serve you every day.
+              </p>
+              <p className="text-sm font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+                Estimated time: 5 minutes
+              </p>
+            </div>
+
+            <button
+              onClick={() => advancePhase('goals_input')}
+              className="mt-8 px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all duration-150 cursor-pointer shadow-sm"
+            >
+              Begin Journey
+            </button>
+          </div>
+        )}
+
+        {currentPhase === 'goals_input' && (
+          <GoalsInputPhase
+            onComplete={async (goals) => {
+              setUserGoals(goals);
+              await saveOnboardingState('ai_generation', extractedData, goals);
+              advancePhase('ai_generation');
+            }}
+          />
+        )}
+
+        {currentPhase === 'ai_generation' && (
+          <AIGenerationPhase
+            goals={userGoals}
+            onComplete={async (generatedData) => {
+              setExtractedData(generatedData);
+              await saveOnboardingState('review', generatedData);
+              advancePhase('review');
+            }}
+          />
+        )}
+
+        {currentPhase === 'review' && (
+          <ReviewPhase
+            operations={extractedData.operations}
+            goals={extractedData.goals}
+            habits={extractedData.habits}
+            metrics={extractedData.metrics}
+            schedule={extractedData.schedule!}
+            onComplete={() => {
+              advancePhase('complete');
+              // Redirect to home after a brief moment
+              setTimeout(() => router.push('/home'), 1000);
+            }}
+          />
+        )}
+
+        {currentPhase === 'complete' && (
+          <div className="text-center space-y-8 px-6 animate-fadeIn max-w-3xl">
+            <div className="text-5xl font-serif font-light text-gray-900 dark:text-white">
+              Your system is live.
+            </div>
+            <p className="text-lg font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider animate-pulse">
+              Redirecting...
+            </p>
+          </div>
+        )}
+
+        {/* Progress indicator */}
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {(['welcome', 'goals_input', 'ai_generation', 'review'] as Phase[]).map((phase, index) => (
+            <div
+              key={phase}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                phase === currentPhase
+                  ? 'bg-gray-900 dark:bg-white scale-125'
+                  : index < (['welcome', 'goals_input', 'ai_generation', 'review'] as Phase[]).indexOf(currentPhase)
+                  ? 'bg-gray-600 dark:bg-slate-400'
+                  : 'bg-gray-300 dark:bg-slate-700'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

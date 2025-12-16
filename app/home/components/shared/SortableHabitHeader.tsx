@@ -30,6 +30,7 @@ export function SortableHabitHeader({ metric, onEdit }: SortableHabitHeaderProps
       ref={setNodeRef}
       style={style}
       className="px-4 py-3 flex items-center justify-center relative border-r border-border hover:bg-card hover:shadow-sm transition-all duration-150 group min-w-0"
+     
     >
       <button
         {...listeners}

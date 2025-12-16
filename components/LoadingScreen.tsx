@@ -14,8 +14,9 @@ export default function LoadingScreen() {
                 key={i}
                 className="border border-border"
                 style={{
-                  animation: `pulse ${1 + (i % 4) * 0.2}s ease-in-out infinite`,
-                  animationDelay: `${(i % 4) * 0.1}s`,
+                  opacity: 0,
+                  animation: `pulse 2s ease-in-out infinite`,
+                  animationDelay: `${(i % 4) * 0.15}s`,
                 }}
               />
             ))}
@@ -48,11 +49,14 @@ export default function LoadingScreen() {
 
       <style jsx>{`
         @keyframes pulse {
-          0%, 100% {
+          0% {
             opacity: 0;
           }
           50% {
-            opacity: 0.2;
+            opacity: 0.9;
+          }
+          100% {
+            opacity: 0;
           }
         }
       `}</style>

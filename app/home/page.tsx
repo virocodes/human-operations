@@ -1,23 +1,28 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Home, Target, BarChart3, Calendar, Moon, Sun, User, UserCircle, LogOut } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Home, Target, BarChart3, Calendar, Moon, Sun, User, UserCircle, LogOut, Mail } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import LoadingScreen from "@/components/LoadingScreen";
 
-// Page Components
+// Page Components - Dashboard loads immediately
 import { DashboardPage } from "./components/dashboard/DashboardPage";
-import { GoalsPage } from "./components/goals/GoalsPage";
-import { MetricsPage } from "./components/metrics/MetricsPage";
-import { OperationsPage } from "./components/operations/OperationsPage";
 import { HabitsHistoryView } from "./components/history/HabitsHistoryView";
 import { MetricsHistoryView } from "./components/history/MetricsHistoryView";
+import MobileTabBar from "./components/navigation/MobileTabBar";
+import { PageSkeleton } from "./components/PageSkeleton";
+
+// Lazy load other pages
+const GoalsPage = lazy(() => import("./components/goals/GoalsPage").then(mod => ({ default: mod.GoalsPage })));
+const MetricsPage = lazy(() => import("./components/metrics/MetricsPage").then(mod => ({ default: mod.MetricsPage })));
+const OperationsPage = lazy(() => import("./components/operations/OperationsPage").then(mod => ({ default: mod.OperationsPage })));
 
 // Custom Hooks
 import { useHomeData } from "./hooks/useHomeData";
@@ -76,18 +81,22 @@ export default function HomePage() {
     setOperations: homeData.setOperations,
   });
 
-  // State for page navigation (2D grid)
+  // State for page navigation (2D grid for desktop, tab for mobile)
   const [currentPageX, setCurrentPageX] = useState(1); // Start on Dashboard (X: 1)
   const [currentPageY, setCurrentPageY] = useState(0); // Start on top row (Y: 0)
+  const [currentTab, setCurrentTab] = useState<"dashboard" | "goals" | "metrics" | "operations">("dashboard"); // Mobile tab navigation
   const [showAddHabitColumn, setShowAddHabitColumn] = useState(false);
 
   // State for history views
   const [showHabitsHistory, setShowHabitsHistory] = useState(false);
   const [showMetricsHistory, setShowMetricsHistory] = useState(false);
 
+  // State for contact modal
+  const [showContactModal, setShowContactModal] = useState(false);
+
   // 2D page grid structure: pageGrid[y][x]
   // Row 0: Goals, Dashboard, Metrics
-  // Row 1: null, Operations, null
+  // Row 1: null, Todo, null
   const pageGrid = [
     [
       { id: 'goals', label: 'Goals', icon: Target },
@@ -96,7 +105,7 @@ export default function HomePage() {
     ],
     [
       null,
-      { id: 'operations', label: 'Operations', icon: Calendar },
+      { id: 'operations', label: 'Todo', icon: Calendar },
       null,
     ]
   ];
@@ -165,16 +174,16 @@ export default function HomePage() {
     <div className="h-screen bg-background overflow-hidden">
       {/* Header */}
       <div className="border-b border-border bg-card shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-serif font-medium text-foreground tracking-tight">
+              <h1 className="text-xl md:text-2xl font-serif font-medium text-foreground tracking-tight">
                 Human <span className="italic font-light">Operations</span>
               </h1>
-              <p className="text-xs font-mono tracking-wider text-muted-foreground mt-1 uppercase">Daily Operations Log</p>
+              <p className="text-xs font-mono tracking-wider text-muted-foreground mt-1 uppercase hidden md:block">Daily Operations Log</p>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -209,6 +218,10 @@ export default function HomePage() {
                       Profile
                     </DropdownMenuItem>
                   </Link>
+                  <DropdownMenuItem onClick={() => setShowContactModal(true)} className="font-mono text-xs cursor-pointer">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Contact
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut} className="font-mono text-xs cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
@@ -220,35 +233,36 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Main Content - 2D Paging */}
+      {/* Main Content */}
       <div className="relative overflow-hidden" style={{ height: 'calc(100vh - 89px)' }}>
-        {/* Pages Container - 2D Grid */}
+        {/* Desktop: 2D Grid Navigation */}
         <div
-          className="transition-transform duration-500 ease-out"
+          className="hidden md:block transition-transform duration-500 ease-out"
           style={{
             transform: gridTransform,
             height: gridHeight,
             width: '300vw'
           }}
         >
-          {/* Row 0, Col 0: Todos & Schedule */}
+          {/* Row 0, Col 0: Goals & Operations */}
           <div className="absolute h-full overflow-y-auto custom-scrollbar" style={{ width: '100vw', height: 'calc(100vh - 89px)', left: '0', top: '0' }}>
             <div className="max-w-7xl mx-auto px-6 py-8 pb-20">
-              <GoalsPage
-                goals={homeData.goals}
-                trackedMetrics={homeData.trackedMetrics}
-                entries={homeData.entries}
-                operations={homeData.operations}
-                todosHook={todosHook}
-                goalsHook={goalsHook}
-                tasks={homeData.tasks}
-                currentTime={homeData.currentTime}
-                wakeHour={homeData.wakeHour}
-                sleepHour={homeData.sleepHour}
-                tasksHook={tasksHook}
-                updateWakeHour={homeData.updateWakeHour}
-                updateSleepHour={homeData.updateSleepHour}
-              />
+              {!homeData.dataLoaded.goals || !homeData.dataLoaded.operations ? (
+                <PageSkeleton />
+              ) : (
+                <Suspense fallback={<PageSkeleton />}>
+                  <OperationsPage
+                    goals={homeData.goals}
+                    trackedMetrics={homeData.trackedMetrics}
+                    entries={homeData.entries}
+                    operations={homeData.operations}
+                    setOperations={homeData.setOperations}
+                    goalsHook={goalsHook}
+                    operationsHook={operationsHook}
+                    habits={homeData.habits}
+                  />
+                </Suspense>
+              )}
             </div>
           </div>
 
@@ -275,38 +289,144 @@ export default function HomePage() {
           {/* Row 0, Col 2: Metrics */}
           <div className="absolute h-full overflow-y-auto custom-scrollbar" style={{ width: '100vw', height: 'calc(100vh - 89px)', left: '200vw', top: '0' }}>
             <div className="max-w-7xl mx-auto px-6 py-8 pb-20">
-              <MetricsPage
-                days={homeData.days}
-                metricsHook={metricsHook}
-                entries={homeData.entries}
-                setEntries={homeData.setEntries}
-                categories={homeData.categories}
-                loadEntries={homeData.loadEntries}
-                onShowMetricsHistory={() => setShowMetricsHistory(true)}
-              />
+              {!homeData.dataLoaded.categories || !homeData.dataLoaded.trackedMetrics ? (
+                <PageSkeleton />
+              ) : (
+                <Suspense fallback={<PageSkeleton />}>
+                  <MetricsPage
+                    days={homeData.days}
+                    metricsHook={metricsHook}
+                    entries={homeData.entries}
+                    setEntries={homeData.setEntries}
+                    categories={homeData.categories}
+                    loadEntries={homeData.loadEntries}
+                    onShowMetricsHistory={() => setShowMetricsHistory(true)}
+                  />
+                </Suspense>
+              )}
             </div>
           </div>
 
-          {/* Row 1, Col 1: Goals & Operations Page */}
+          {/* Row 1, Col 1: Todos & Schedule Page */}
           <div className="absolute h-full overflow-y-auto custom-scrollbar" style={{ width: '100vw', height: 'calc(100vh - 89px)', left: '100vw', top: 'calc(100vh - 89px)' }}>
             <div className="max-w-7xl mx-auto px-6 pt-28 pb-20">
-              <OperationsPage
-                goals={homeData.goals}
-                trackedMetrics={homeData.trackedMetrics}
-                entries={homeData.entries}
-                operations={homeData.operations}
-                setOperations={homeData.setOperations}
-                goalsHook={goalsHook}
-                operationsHook={operationsHook}
-                habits={homeData.habits}
-              />
+              {!homeData.dataLoaded.todos || !homeData.dataLoaded.tasks ? (
+                <PageSkeleton />
+              ) : (
+                <Suspense fallback={<PageSkeleton />}>
+                  <GoalsPage
+                    goals={homeData.goals}
+                    trackedMetrics={homeData.trackedMetrics}
+                    entries={homeData.entries}
+                    operations={homeData.operations}
+                    todosHook={todosHook}
+                    goalsHook={goalsHook}
+                    tasks={homeData.tasks}
+                    currentTime={homeData.currentTime}
+                    wakeHour={homeData.wakeHour}
+                    sleepHour={homeData.sleepHour}
+                    tasksHook={tasksHook}
+                    updateWakeHour={homeData.updateWakeHour}
+                    updateSleepHour={homeData.updateSleepHour}
+                  />
+                </Suspense>
+              )}
             </div>
+          </div>
+        </div>
+
+        {/* Mobile: Tab-based Navigation */}
+        <div className="block md:hidden h-full overflow-y-auto custom-scrollbar pb-20">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            {currentTab === "dashboard" && (
+              <DashboardPage
+                user={homeData.user}
+                profile={homeData.profile}
+                habits={homeData.habits}
+                entries={homeData.entries}
+                currentTime={homeData.currentTime}
+                todayStats={homeData.todayStats}
+                days={homeData.days}
+                showAddHabitColumn={showAddHabitColumn}
+                setShowAddHabitColumn={setShowAddHabitColumn}
+                habitsHook={habitsHook}
+                updateEntry={homeData.updateEntry}
+                onShowHabitsHistory={() => setShowHabitsHistory(true)}
+              />
+            )}
+            {currentTab === "goals" && (
+              <>
+                {!homeData.dataLoaded.goals || !homeData.dataLoaded.operations ? (
+                  <PageSkeleton />
+                ) : (
+                  <Suspense fallback={<PageSkeleton />}>
+                    <OperationsPage
+                      goals={homeData.goals}
+                      trackedMetrics={homeData.trackedMetrics}
+                      entries={homeData.entries}
+                      operations={homeData.operations}
+                      setOperations={homeData.setOperations}
+                      goalsHook={goalsHook}
+                      operationsHook={operationsHook}
+                      habits={homeData.habits}
+                    />
+                  </Suspense>
+                )}
+              </>
+            )}
+            {currentTab === "metrics" && (
+              <>
+                {!homeData.dataLoaded.categories || !homeData.dataLoaded.trackedMetrics ? (
+                  <PageSkeleton />
+                ) : (
+                  <Suspense fallback={<PageSkeleton />}>
+                    <MetricsPage
+                      days={homeData.days}
+                      metricsHook={metricsHook}
+                      entries={homeData.entries}
+                      setEntries={homeData.setEntries}
+                      categories={homeData.categories}
+                      loadEntries={homeData.loadEntries}
+                      onShowMetricsHistory={() => setShowMetricsHistory(true)}
+                    />
+                  </Suspense>
+                )}
+              </>
+            )}
+            {currentTab === "operations" && (
+              <>
+                {!homeData.dataLoaded.todos || !homeData.dataLoaded.tasks ? (
+                  <PageSkeleton />
+                ) : (
+                  <Suspense fallback={<PageSkeleton />}>
+                    <GoalsPage
+                      goals={homeData.goals}
+                      trackedMetrics={homeData.trackedMetrics}
+                      entries={homeData.entries}
+                      operations={homeData.operations}
+                      todosHook={todosHook}
+                      goalsHook={goalsHook}
+                      tasks={homeData.tasks}
+                      currentTime={homeData.currentTime}
+                      wakeHour={homeData.wakeHour}
+                      sleepHour={homeData.sleepHour}
+                      tasksHook={tasksHook}
+                      updateWakeHour={homeData.updateWakeHour}
+                      updateSleepHour={homeData.updateSleepHour}
+                    />
+                  </Suspense>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Bottom Chip Navigation - T-shaped Grid */}
-      <div className="fixed bottom-6 right-6 z-20 flex flex-col items-center">
+      {/* Mobile Tab Bar */}
+      <MobileTabBar currentTab={currentTab} onTabChange={setCurrentTab} />
+
+      {/* Desktop: Bottom Chip Navigation - T-shaped Grid */}
+      <div className="hidden md:flex fixed bottom-6 right-6 z-20 flex-col items-center">
         {/* Top row - all 3 pages */}
         <div className="flex items-center gap-2 bg-card border-2 border-border shadow-lg p-1">
           {pageGrid[0].map((page, colIndex) => {
@@ -368,6 +488,36 @@ export default function HomePage() {
           onClose={() => setShowMetricsHistory(false)}
         />
       )}
+
+      {/* Contact Modal */}
+      <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
+        <DialogContent className="md:max-w-[425px] rounded-none md:rounded-sm bg-card md:border-border">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-xl">Contact</DialogTitle>
+            <DialogDescription className="text-sm font-light">
+              Get in touch for requests, bug reports, or feedback.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center gap-3 p-4 bg-accent/50 border border-border rounded-sm">
+              <Mail className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs font-mono text-muted-foreground uppercase mb-1">Email</p>
+                <a
+                  href="mailto:dbellan1291@gmail.com"
+                  className="text-sm font-mono text-foreground hover:text-primary transition-colors"
+                >
+                  dbellan1291@gmail.com
+                </a>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground font-light">
+              Feel free to reach out for any requests, bug fixes, feature suggestions, or general feedback.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
