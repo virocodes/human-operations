@@ -87,6 +87,10 @@ export interface Profile {
   stripe_customer_id?: string;
   has_paid?: boolean;
   payment_date?: string;
+  tour_completed?: boolean;
+  trial_actions_count?: number;
+  trial_completed_at?: string;
+  first_dashboard_visit_date?: string;
 }
 
 export interface Operation {

@@ -1,28 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { trackEvent } from "@/lib/analytics/client";
 
 export default function Home() {
-  const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.push('/home');
-      }
-    };
-    checkAuth();
-  }, [router, supabase.auth]);
 
   return (
-    <div className="min-h-screen bg-amber-50/30 dark:bg-slate-950">
+    <div className="h-screen overflow-hidden bg-amber-50/30 dark:bg-slate-950">
+      {/* Header with Sign In */}
+      <div className="absolute top-8 right-8 z-10">
+        <Link href="/login">
+          <button className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white uppercase transition-colors">
+            Sign In →
+          </button>
+        </Link>
+      </div>
+
       <main className="max-w-6xl mx-auto px-6 py-20">
         {/* Hero Section */}
         <div className="space-y-8 mb-32">
@@ -43,12 +38,12 @@ export default function Home() {
             </p>
           </div>
 
-          <Link href="/home">
+          <Link href="/onboarding" onClick={() => trackEvent('landing_cta_clicked', {})}>
             <Button
               size="lg"
               className="group mt-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-6 h-11 rounded-sm font-mono text-sm tracking-wide uppercase cursor-pointer"
             >
-              Begin Operations
+              Start Building Your System
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>

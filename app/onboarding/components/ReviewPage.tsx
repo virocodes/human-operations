@@ -2,37 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Edit2, Check, X, Trash2 } from "lucide-react";
-
-interface Operation {
-  id: string;
-  name: string;
-  description: string;
-  linked_goals?: string[];
-}
-
-interface Goal {
-  id: string;
-  title: string;
-  operation_name?: string;
-  operation_id?: string;
-  goal_type: string;
-}
-
-interface Habit {
-  id: string;
-  name: string;
-  linked_operation: string;
-}
-
-interface Metric {
-  id: string;
-  name: string;
-  unit: string;
-  optimal_value: number;
-  minimum_value: number;
-  operator: string;
-  linked_operation: string;
-}
+import type { Operation, Goal, Habit, Metric } from "@/lib/draft/types";
 
 interface Schedule {
   wakeHour: number;
@@ -55,6 +25,7 @@ interface ReviewPageProps {
   onStartOver: () => void;
   onFinalize: () => void;
   isFinalizing?: boolean;
+  ctaText?: string;
 }
 
 type EditingItem = {
@@ -73,7 +44,8 @@ export function ReviewPage({
   onUpdate,
   onStartOver,
   onFinalize,
-  isFinalizing = false
+  isFinalizing = false,
+  ctaText
 }: ReviewPageProps) {
   const [editing, setEditing] = useState<EditingItem>(null);
   const [showAddOperation, setShowAddOperation] = useState(false);
@@ -173,13 +145,13 @@ export function ReviewPage({
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-6xl mx-auto">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-serif font-light text-gray-900 dark:text-white">
+      <div className="text-center space-y-3 sm:space-y-4 pt-4 sm:pt-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-gray-900 dark:text-white">
           Your System
         </h1>
-        <p className="text-sm font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+        <p className="text-xs sm:text-sm font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider">
           Review, edit, and customize
         </p>
       </div>
@@ -199,12 +171,12 @@ export function ReviewPage({
         </div>
 
         {operations.map((op) => (
-          <div key={op.id} className="bg-card border-2 border-border p-6 relative group">
+          <div key={op.id} className="bg-card border-2 border-border p-4 sm:p-6 relative group">
             {/* Corner brackets */}
-            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gray-900 dark:border-white pointer-events-none"></div>
-            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gray-900 dark:border-white pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-gray-900 dark:border-white pointer-events-none"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gray-900 dark:border-white pointer-events-none"></div>
+            <div className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-l-2 border-gray-900 dark:border-white pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-t-2 border-r-2 border-gray-900 dark:border-white pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-l-2 border-gray-900 dark:border-white pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 border-b-2 border-r-2 border-gray-900 dark:border-white pointer-events-none"></div>
 
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-2">
@@ -214,13 +186,13 @@ export function ReviewPage({
                     type="text"
                     value={editing.value as string}
                     onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                    className="w-full px-2 py-1 bg-background border border-border text-2xl font-serif text-gray-900 dark:text-white"
+                    className="w-full px-2 py-1 bg-background border border-border text-lg sm:text-xl md:text-2xl font-serif text-gray-900 dark:text-white"
                     autoFocus
                     onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
                   />
                 ) : (
                   <div className="flex items-center gap-2">
-                    <h3 className="text-2xl font-serif text-gray-900 dark:text-white">{op.name}</h3>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-serif text-gray-900 dark:text-white">{op.name}</h3>
                     <button
                       onClick={() => startEdit('operation', op.id, 'name', op.name)}
                       className="opacity-0 group-hover:opacity-100 p-1 hover:bg-accent rounded transition-opacity cursor-pointer"
@@ -415,7 +387,7 @@ export function ReviewPage({
                             autoFocus
                           />
                         ) : (
-                          <span onClick={() => startEdit('metric', metric.id, 'optimal_value', metric.optimal_value)} className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
+                          <span onClick={() => startEdit('metric', metric.id, 'optimal_value', metric.optimal_value ?? 0)} className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
                             {metric.optimal_value}
                           </span>
                         )}
@@ -442,20 +414,20 @@ export function ReviewPage({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-center gap-4 pt-8">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-6 sm:pt-8 pb-4">
         <button
           onClick={onStartOver}
           disabled={isFinalizing}
-          className="px-8 py-3 border border-gray-900 dark:border-white text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-white"
+          className="w-full sm:w-auto px-6 sm:px-8 py-3 border border-gray-900 dark:border-white text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-white"
         >
           Start Over
         </button>
         <button
           onClick={onFinalize}
           disabled={isFinalizing}
-          className="px-12 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all duration-150 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="w-full sm:w-auto px-8 sm:px-12 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all duration-150 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          {isFinalizing ? 'Finalizing...' : 'Finalize System'}
+          {isFinalizing ? 'Saving...' : (ctaText || 'Finalize System')}
         </button>
       </div>
     </div>

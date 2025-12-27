@@ -3,36 +3,7 @@
 import { useState } from "react";
 import { PhaseContainer } from "../PhaseContainer";
 import { AIMessage } from "../AIMessage";
-
-interface Operation {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface Goal {
-  id: string;
-  operation_id: string;
-  title: string;
-  goal_type: string;
-  subgoals?: string[];
-}
-
-interface Habit {
-  id: string;
-  name: string;
-  linked_operation?: string;
-}
-
-interface Metric {
-  id: string;
-  name: string;
-  unit: string;
-  optimal_value: number;
-  minimum_value: number;
-  operator: string;
-  linked_operation?: string;
-}
+import type { Operation, Goal, Habit, Metric } from "@/lib/draft/types";
 
 interface ReviewPhaseProps {
   operations: Operation[];

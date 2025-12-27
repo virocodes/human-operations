@@ -4,16 +4,7 @@ import { useState } from "react";
 import { PhaseContainer } from "../PhaseContainer";
 import { AIMessage } from "../AIMessage";
 import { UserInput } from "../UserInput";
-
-interface Metric {
-  id: string;
-  name: string;
-  unit: string;
-  optimal_value: number;
-  minimum_value: number;
-  operator: string;
-  linked_operation?: string;
-}
+import type { Metric } from "@/lib/draft/types";
 
 interface MetricsPhaseProps {
   onComplete: (metrics: Metric[]) => void;

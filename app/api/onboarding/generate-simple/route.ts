@@ -1,17 +1,9 @@
 import { NextRequest } from 'next/server';
 import { anthropic, MODEL } from '@/lib/anthropic/client';
-import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify user is authenticated
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    // No auth check - allow anonymous users to generate systems for draft mode
     const { goalDetails } = await request.json();
 
     if (!goalDetails || !Array.isArray(goalDetails) || goalDetails.length === 0) {

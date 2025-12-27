@@ -12,10 +12,23 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+
+    // Check for draft context from URL params
+    const searchParams = new URLSearchParams(window.location.search);
+    const source = searchParams.get('source');
+    const draftId = searchParams.get('draftId');
+
+    // Build redirect URL with context
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    let redirectTo = `${origin}/auth/callback`;
+    if (source === 'onboarding' && draftId) {
+      redirectTo += `?source=onboarding&draftId=${draftId}`;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectTo,
       },
     });
 

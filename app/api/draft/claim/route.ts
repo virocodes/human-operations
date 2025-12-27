@@ -11,7 +11,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { operations, goals, habits, metrics, schedule } = await request.json();
+    const { draftId, operations, goals, habits, metrics, schedule } = await request.json();
+
+    if (!draftId) {
+      return NextResponse.json({ error: 'draftId is required' }, { status: 400 });
+    }
+
+    // Check if this draft has already been claimed (prevent double-claim)
+    const { data: existingClaim } = await supabase
+      .from('funnel_analytics')
+      .select('id')
+      .eq('draft_id', draftId)
+      .eq('event_type', 'draft_claimed')
+      .eq('event_data->>success', 'true')
+      .single();
+
+    if (existingClaim) {
+      return NextResponse.json(
+        { error: 'Draft has already been claimed' },
+        { status: 400 }
+      );
+    }
+
+    // ============================================================
+    // REUSE FINALIZATION LOGIC FROM /api/onboarding/finalize
+    // ============================================================
 
     // 1. Create operations
     const operationsToInsert = operations.map((op: any, index: number) => ({
@@ -95,19 +119,16 @@ export async function POST(request: NextRequest) {
 
           if (linkError) {
             console.error('Failed to link metric to operation:', linkError);
-            // Don't fail for links
           }
         }
       }
     }
 
-    // 3. Create goals and subgoals (now that metrics exist)
+    // 3. Create goals and subgoals
     if (goals.length > 0) {
       for (const goal of goals) {
-        // Get the metric ID if this goal has a linked metric
         const metricId = goal.linked_metric_name ? metricIdMap.get(goal.linked_metric_name) : null;
 
-        // Create the goal
         const { data: createdGoal, error: goalError } = await supabase
           .from('goals')
           .insert({
@@ -141,7 +162,6 @@ export async function POST(request: NextRequest) {
 
           if (subgoalsError) {
             console.error('Failed to create subgoals:', subgoalsError);
-            // Don't fail the whole process for subgoals
           }
         }
       }
@@ -189,7 +209,6 @@ export async function POST(request: NextRequest) {
 
         if (linksError) {
           console.error('Failed to link habits to operations:', linksError);
-          // Don't fail for links
         }
       }
     }
@@ -206,11 +225,10 @@ export async function POST(request: NextRequest) {
 
       if (scheduleError) {
         console.error('Failed to save schedule:', scheduleError);
-        // Don't fail the whole process for schedule
       }
     }
 
-    // 6. Mark onboarding as complete (upsert to handle case where record doesn't exist)
+    // 6. Mark onboarding as complete
     const { error: stateError } = await supabase
       .from('onboarding_state')
       .upsert({
@@ -223,30 +241,49 @@ export async function POST(request: NextRequest) {
 
     if (stateError) {
       console.error('Failed to update onboarding state:', stateError);
-      // Don't fail the whole process for onboarding state
     }
 
-    // 7. Record analytics (if table exists)
-    try {
-      await supabase.from('onboarding_analytics').insert({
-        user_id: user.id,
-        phase_reached: 'complete',
-        operations_created: operations.length,
-        goals_created: goals.length,
-        habits_created: habits.length,
-        metrics_created: metrics.length,
-        completed: true
-      });
-    } catch (analyticsError) {
-      console.error('Failed to record analytics:', analyticsError);
-      // Don't fail for analytics
-    }
+    // 7. Record draft claim analytics
+    await supabase.from('funnel_analytics').insert({
+      user_id: user.id,
+      draft_id: draftId,
+      event_type: 'draft_claimed',
+      event_data: {
+        success: true,
+        operations_count: operations.length,
+        goals_count: goals.length,
+        habits_count: habits.length,
+        metrics_count: metrics.length
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Finalize error:', error);
+    console.error('Draft claim error:', error);
+
+    // Record failed claim attempt
+    try {
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const body = await request.json();
+
+      if (user && body.draftId) {
+        await supabase.from('funnel_analytics').insert({
+          user_id: user.id,
+          draft_id: body.draftId,
+          event_type: 'draft_claimed',
+          event_data: {
+            success: false,
+            error: error.message
+          }
+        });
+      }
+    } catch (analyticsError) {
+      console.error('Failed to record analytics for failed claim:', analyticsError);
+    }
+
     return NextResponse.json(
-      { error: error.message || 'Failed to finalize onboarding' },
+      { error: error.message || 'Failed to claim draft' },
       { status: 500 }
     );
   }

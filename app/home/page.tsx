@@ -18,6 +18,8 @@ import { HabitsHistoryView } from "./components/history/HabitsHistoryView";
 import { MetricsHistoryView } from "./components/history/MetricsHistoryView";
 import MobileTabBar from "./components/navigation/MobileTabBar";
 import { PageSkeleton } from "./components/PageSkeleton";
+import { PaymentModal } from "./components/shared/PaymentModal";
+import { TourOverlay } from "./components/tour/TourOverlay";
 
 // Lazy load other pages
 const GoalsPage = lazy(() => import("./components/goals/GoalsPage").then(mod => ({ default: mod.GoalsPage })));
@@ -32,6 +34,7 @@ import { useGoals } from "./hooks/useGoals";
 import { useTasks } from "./hooks/useTasks";
 import { useTodos } from "./hooks/useTodos";
 import { useOperations } from "./hooks/useOperations";
+import { useTourState } from "./hooks/useTourState";
 
 export default function HomePage() {
   const router = useRouter();
@@ -94,6 +97,12 @@ export default function HomePage() {
   // State for contact modal
   const [showContactModal, setShowContactModal] = useState(false);
 
+  // State for payment modal
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  // Tour state
+  const { tourActive, setTourActive, currentStep, nextStep, steps, completeTour } = useTourState();
+
   // 2D page grid structure: pageGrid[y][x]
   // Row 0: Goals, Dashboard, Metrics
   // Row 1: null, Todo, null
@@ -129,8 +138,53 @@ export default function HomePage() {
   }, [currentPageX, currentPageY]);
 
   // Keyboard navigation (2D)
+  // Check tour and payment status on mount and when window gains focus
+  useEffect(() => {
+    const checkPaymentAndTour = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('tour_completed, has_paid')
+        .eq('id', user.id)
+        .single();
+
+      if (userData) {
+        const hasPaid = userData.has_paid === true;
+        const hasCompletedTour = userData.tour_completed === true;
+
+        if (hasPaid) {
+          // Paid users skip tour and payment modal
+          setShowPaymentModal(false);
+          setTourActive(false);
+        } else if (!hasCompletedTour) {
+          // Show tour for unpaid users who haven't completed it
+          setTourActive(true);
+          setShowPaymentModal(false);
+        } else if (hasCompletedTour && !hasPaid) {
+          // Completed tour but not paid → show payment modal
+          setShowPaymentModal(true);
+          setTourActive(false);
+        }
+      }
+    };
+
+    // Check on mount
+    checkPaymentAndTour();
+
+    // Re-check when window gains focus (e.g., returning from Stripe checkout)
+    window.addEventListener('focus', checkPaymentAndTour);
+    return () => window.removeEventListener('focus', checkPaymentAndTour);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Block navigation during tour (except Step 3 which allows it)
+      if (tourActive && !steps[currentStep]?.allowedInteractions?.includes('keyboard-nav')) {
+        return;
+      }
+
       // Ignore arrow keys if user is typing in an input/textarea
       const target = e.target as HTMLElement;
       if (
@@ -149,7 +203,7 @@ export default function HomePage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigatePage]);
+  }, [navigatePage, tourActive, currentStep, steps]);
 
   const goToPage = (x: number, y: number) => {
     if (y >= 0 && y < pageGrid.length && x >= 0 && x < pageGrid[y].length && pageGrid[y][x] !== null) {
@@ -517,6 +571,21 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Payment Modal - unclosable */}
+      <PaymentModal isOpen={showPaymentModal} />
+
+      {/* Tour Overlay - mandatory */}
+      <TourOverlay
+        isOpen={tourActive}
+        currentStep={currentStep}
+        steps={steps}
+        onNext={nextStep}
+        onComplete={() => {
+          completeTour();
+          setShowPaymentModal(true);
+        }}
+      />
 
     </div>
   );

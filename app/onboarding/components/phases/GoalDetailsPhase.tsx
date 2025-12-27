@@ -57,13 +57,13 @@ export function GoalDetailsPhase({ goals, onComplete, onBack }: GoalDetailsPhase
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn w-full">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-serif font-light text-gray-900 dark:text-white">
+      <div className="text-center space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-gray-900 dark:text-white">
           How will you achieve these?
         </h1>
-        <p className="text-sm font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+        <p className="text-xs sm:text-sm font-mono text-gray-600 dark:text-slate-400 uppercase tracking-wider px-4">
           Describe the steps, habits, or metrics for each goal
         </p>
       </div>
@@ -100,7 +100,7 @@ export function GoalDetailsPhase({ goals, onComplete, onBack }: GoalDetailsPhase
               <textarea
                 value={details[index]}
                 onChange={(e) => updateDetail(index, e.target.value)}
-                placeholder="What will you do to achieve this? (e.g., daily habits, metrics to track, specific actions...)"
+                placeholder="What will you do? (e.g., daily habits, metrics to track...)"
                 rows={4}
                 className={`
                   w-full px-4 py-3
@@ -124,16 +124,16 @@ export function GoalDetailsPhase({ goals, onComplete, onBack }: GoalDetailsPhase
       </div>
 
       {/* Actions */}
-      <div className="flex justify-center gap-4 pt-4">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-4">
         <button
           onClick={onBack}
-          className="px-8 py-3 border border-gray-900 dark:border-white text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all cursor-pointer"
+          className="w-full sm:w-auto px-6 sm:px-8 py-3 border border-gray-900 dark:border-white text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-all cursor-pointer"
         >
           Back
         </button>
         <button
           onClick={handleContinue}
-          className="px-12 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all duration-150 shadow-lg flex items-center gap-2 cursor-pointer"
+          className="w-full sm:w-auto px-8 sm:px-12 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-mono text-xs uppercase tracking-widest hover:scale-[1.02] transition-all duration-150 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
         >
           Continue
           <ArrowRight className="h-4 w-4" />

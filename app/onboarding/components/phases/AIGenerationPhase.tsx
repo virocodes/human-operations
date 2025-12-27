@@ -2,43 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Loader2, Sparkles, Brain, Zap, CheckCircle2 } from "lucide-react";
-
-interface Operation {
-  id: string;
-  name: string;
-  description: string;
-  linked_goals: string[];
-}
-
-interface Habit {
-  id: string;
-  name: string;
-  linked_operation: string;
-  reasoning: string;
-}
-
-interface Metric {
-  id: string;
-  name: string;
-  unit: string;
-  optimal_value: number;
-  minimum_value: number;
-  operator: string;
-  linked_operation: string;
-  reasoning: string;
-}
+import type { Operation, Habit, Metric, Goal } from "@/lib/draft/types";
 
 interface Schedule {
   wakeHour: number;
   sleepHour: number;
-  reasoning: string;
-}
-
-interface Goal {
-  id: string;
-  operation_id: string;
-  title: string;
-  goal_type: string;
+  reasoning?: string;
 }
 
 interface GeneratedSystemData {
@@ -151,7 +120,7 @@ export function AIGenerationPhase({ goals, onComplete }: AIGenerationPhaseProps)
             // Generate goals from user input + operations
             const generatedGoals: Goal[] = [];
             localOperations.forEach((op) => {
-              op.linked_goals.forEach((goalText) => {
+              op.linked_goals?.forEach((goalText) => {
                 generatedGoals.push({
                   id: `goal-${Date.now()}-${generatedGoals.length}`,
                   operation_id: op.id,
@@ -232,7 +201,7 @@ export function AIGenerationPhase({ goals, onComplete }: AIGenerationPhaseProps)
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 py-8 text-center">
+      <div className="flex-shrink-0 py-4 sm:py-6 md:py-8 text-center">
         {stage === 'connecting' && (
           <div className="flex items-center justify-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-gray-600 dark:text-slate-500" />
@@ -274,9 +243,9 @@ export function AIGenerationPhase({ goals, onComplete }: AIGenerationPhaseProps)
       </div>
 
       {/* Split Screen */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 px-6 pb-20">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-6 pb-12 sm:pb-20">
         {/* Left Panel: Thinking */}
-        <div className="bg-card border border-border shadow-sm p-6 relative overflow-hidden">
+        <div className="bg-card border border-border shadow-sm p-4 sm:p-6 relative overflow-hidden">
           {/* Corner brackets */}
           <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
           <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
@@ -315,7 +284,7 @@ export function AIGenerationPhase({ goals, onComplete }: AIGenerationPhaseProps)
         </div>
 
         {/* Right Panel: Generated Items */}
-        <div className="bg-card border border-border shadow-sm p-6 relative overflow-hidden">
+        <div className="bg-card border border-border shadow-sm p-4 sm:p-6 relative overflow-hidden">
           {/* Corner brackets */}
           <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
           <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gray-900 dark:border-[#e5e5e5] z-10"></div>
