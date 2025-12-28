@@ -1,3 +1,4 @@
+// Landing Page Component
 "use client";
 
 import Link from "next/link";
