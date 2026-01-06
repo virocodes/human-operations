@@ -14,8 +14,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Human Operations",
-  description: "A personal productivity and habit tracking system - your life operating system",
+  title: "Human Operations - AI-Powered Habit Tracker & Life Operating System",
+  description: "Build better habits, track what matters, and achieve your goals with AI-powered personalization. No subscriptions—pay once, use forever. Start your free trial today.",
+  keywords: ["habit tracker", "productivity app", "goal tracking", "life operating system", "AI habits", "personal productivity", "metric tracking", "daily planner"],
+  authors: [{ name: "Human Operations" }],
+  creator: "Human Operations",
+  publisher: "Human Operations",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://humanoperations.app",
+    title: "Human Operations - AI-Powered Habit Tracker & Life Operating System",
+    description: "Build better habits, track what matters, and achieve your goals with AI-powered personalization. No subscriptions—pay once, use forever.",
+    siteName: "Human Operations",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Human Operations - AI-Powered Habit Tracker & Life Operating System",
+    description: "Build better habits, track what matters, and achieve your goals with AI-powered personalization. No subscriptions—pay once, use forever.",
+  },
   icons: {
     icon: [
       { url: '/mainlogo.svg', type: 'image/svg+xml' },
@@ -31,6 +48,17 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
