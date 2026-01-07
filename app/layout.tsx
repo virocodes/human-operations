@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Human Operations",
-  description: "A personal productivity and habit tracking system - your life operating system",
+  title: "Human Operations - Life Operating System & Habit Tracker",
+  description: "AI-powered habit tracker, goal manager, and personal productivity system. Track metrics, build habits, achieve goals. $19 one-time payment, lifetime access. 5-minute setup with Claude AI.",
+  keywords: ["habit tracker", "productivity", "goal tracking", "metrics", "personal operating system", "AI setup", "life management"],
   icons: {
     icon: [
       { url: '/mainlogo.svg', type: 'image/svg+xml' },
@@ -31,6 +32,17 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  openGraph: {
+    title: "Human Operations - Your Life Operating System",
+    description: "Track habits, measure metrics, achieve goals. AI-powered setup in 5 minutes. $19 one-time payment.",
+    type: "website",
+    siteName: "Human Operations",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Human Operations - Life Operating System",
+    description: "AI-powered habit tracker and productivity system. One dashboard for all your habits, metrics, and goals.",
   },
 };
 
