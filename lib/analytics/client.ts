@@ -2,6 +2,8 @@
 
 export type FunnelEventType =
   | 'landing_cta_clicked'
+  | 'landing_signin_clicked'
+  | 'landing_feature_hover'
   | 'onboarding_started'
   | 'onboarding_stage_completed'
   | 'system_generated_viewed'

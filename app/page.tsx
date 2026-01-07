@@ -13,7 +13,7 @@ export default function Home() {
       <div className="absolute top-8 right-8 z-10">
         <Link href="/login">
           <button
-            onClick={() => trackEvent('sign_in_clicked', {})}
+            onClick={() => trackEvent('landing_signin_clicked', {})}
             className="text-sm font-mono tracking-wider text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white uppercase transition-colors"
           >
             Sign In →
@@ -123,7 +123,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div
               className="flex items-start gap-4 p-6 border-2 border-gray-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/50 hover:border-gray-400 dark:hover:border-slate-600 transition-colors cursor-default"
-              onMouseEnter={() => trackEvent('feature_hover', { feature: 'ai_setup' })}
+              onMouseEnter={() => trackEvent('landing_feature_hover', { feature: 'ai_setup' })}
             >
               <Sparkles className="h-6 w-6 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-1" />
               <div>
@@ -135,7 +135,7 @@ export default function Home() {
             </div>
             <div
               className="flex items-start gap-4 p-6 border-2 border-gray-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/50 hover:border-gray-400 dark:hover:border-slate-600 transition-colors cursor-default"
-              onMouseEnter={() => trackEvent('feature_hover', { feature: 'keyboard_nav' })}
+              onMouseEnter={() => trackEvent('landing_feature_hover', { feature: 'keyboard_nav' })}
             >
               <Keyboard className="h-6 w-6 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-1" />
               <div>
@@ -147,7 +147,7 @@ export default function Home() {
             </div>
             <div
               className="flex items-start gap-4 p-6 border-2 border-gray-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/50 hover:border-gray-400 dark:hover:border-slate-600 transition-colors cursor-default"
-              onMouseEnter={() => trackEvent('feature_hover', { feature: 'operations' })}
+              onMouseEnter={() => trackEvent('landing_feature_hover', { feature: 'operations' })}
             >
               <Calendar className="h-6 w-6 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-1" />
               <div>
@@ -159,7 +159,7 @@ export default function Home() {
             </div>
             <div
               className="flex items-start gap-4 p-6 border-2 border-gray-300 dark:border-slate-700 bg-white/60 dark:bg-slate-900/50 hover:border-gray-400 dark:hover:border-slate-600 transition-colors cursor-default"
-              onMouseEnter={() => trackEvent('feature_hover', { feature: 'pricing' })}
+              onMouseEnter={() => trackEvent('landing_feature_hover', { feature: 'pricing' })}
             >
               <DollarSign className="h-6 w-6 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-1" />
               <div>
