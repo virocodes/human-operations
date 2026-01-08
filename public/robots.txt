@@ -1,0 +1,18 @@
+# robots.txt for Human Operations
+# https://humanoperations.com/robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /home
+Disallow: /profile
+Disallow: /terminal
+Disallow: /payment
+Disallow: /onboarding
+Disallow: /offline
+
+# Sitemap
+Sitemap: https://humanoperations.com/sitemap.xml
+
+# Crawl-delay for bots
+Crawl-delay: 1
