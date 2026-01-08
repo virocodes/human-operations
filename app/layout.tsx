@@ -14,8 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Human Operations",
-  description: "A personal productivity and habit tracking system - your life operating system",
+  title: "Human Operations - Your Life, Quantified",
+  description: "Stop wondering if you're making progress. Track habits, measure what matters, and stay accountable with Human Operations - your personal life operating system.",
+  keywords: "habit tracking, productivity, personal development, goal tracking, life metrics, quantified self",
+  authors: [{ name: "Human Operations" }],
   icons: {
     icon: [
       { url: '/mainlogo.svg', type: 'image/svg+xml' },
@@ -31,6 +33,27 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  openGraph: {
+    title: "Human Operations - Your Life, Quantified",
+    description: "Stop wondering if you're making progress. Track habits, measure what matters, and stay accountable.",
+    url: "https://humanoperations.co",
+    siteName: "Human Operations",
+    type: "website",
+    images: [
+      {
+        url: "/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "Human Operations Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Human Operations - Your Life, Quantified",
+    description: "Stop wondering if you're making progress. Track habits, measure what matters, and stay accountable.",
+    images: ["/icon-512.png"],
   },
 };
 
